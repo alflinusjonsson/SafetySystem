@@ -58,13 +58,14 @@ void setup() {
 
   Serial.begin(9600);
 
-  // set buzzer as output
+  // set buzzer as output and turn it off
   pinMode(buzzerPin, OUTPUT);
   analogWrite(buzzerPin, 255);
  
   // set button as an input
   pinMode(buttonPin, INPUT);
 
+  // set timer to 0 as default
   setTime(0,0,0,0,0,0000);
 }
 
@@ -75,18 +76,20 @@ void timers(){
   lcd.print(":");
   lcd.print(second());
   lcd.print(" ");
-
-  Serial.print(calculateRPS());
   
+  lcd.setCursor(1,2);
+  lcd.print("Max: ");
+  lcd.print(calculateRPS());
+
   if (calculateRPS() >= minute())
   {
-   
+    lcd.clear();
+    lcd.print("WARNING! CHECK OUT!");
   }
 }
 
-
-void sendBluetooth()
-{
+void sendBluetooth(){
+  
   Serial.println();
   Serial.print(stamp);
   Serial.print(",");
@@ -99,25 +102,26 @@ void sendBluetooth()
   Serial.print(radiationLevel);
   Serial.print(",");
   Serial.print(DEADorALIVE);
-  
 }
 
-int calculateRPS()
-{
+int calculateRPS(){
+  
   if (PPE == 'C'){
-  RPS_UNIT = (REACTORROOM * radiationLevel)/1;
+    RPS_UNIT = (REACTORROOM * radiationLevel)/1;
   }
 
   if (PPE == 'S'){
-  RPS_UNIT = (REACTORROOM * radiationLevel)/5;
+    RPS_UNIT = (REACTORROOM * radiationLevel)/5;
   }
 
-  long maxAllowedTime = 500000/RPS_UNIT;
+  long maxAllowedDailyRad = 500000/RPS_UNIT;
   
-  return maxAllowedTime/60;
+  return maxAllowedDailyRad/60;
 }
+
 void loop() {
 
+  // send information over bluetooth
   sendBluetooth();
 
   // read the state of radiation
@@ -193,10 +197,8 @@ void loop() {
     lcd.print("IN ");
     stamp = IN; 
     delay(1000); 
-    setTime(0, 0, 0, 0, 0, 0000);
     
-    
-    
+    setTime(0, 0, 0, 0, 0, 0000); 
   }
 
   else if (content.substring(1) == "96 FE 0A F8" && stamp == IN)
@@ -205,17 +207,15 @@ void loop() {
     delay(50);
     analogWrite(buzzerPin, 255);
     lcd.home();
-    lcd.print("OUT");
-    
+    lcd.print("OUT"); 
     stamp = OUT;
     delay(1000);
+    
     setTime(0, 0, 0, 0, 0, 0000);
     lcd.setCursor(0,2);
     lcd.print("0");
     lcd.print(":");
     lcd.print("00");
-    
-    
+   
   }
-    
 }
