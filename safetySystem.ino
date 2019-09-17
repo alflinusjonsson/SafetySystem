@@ -110,8 +110,9 @@ void state_machine_run()
 }
 
 void sendBluetooth(){
-  
+
   Serial.println();
+  Serial.print("!");
   Serial.print(stamp);
   Serial.print(",");
   Serial.print(minute());
@@ -123,6 +124,7 @@ void sendBluetooth(){
   Serial.print(radiationLevel);
   Serial.print(",");
   Serial.print(room);
+  Serial.print(";");
 
   delay(200);
 }
