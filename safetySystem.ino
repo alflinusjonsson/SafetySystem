@@ -239,6 +239,7 @@ void loop() {
     lcd.print("OUT"); 
     stamp = OUT;
     Serial.print("OUT");
+    sendBluetooth();
     delay(2000);
     lcd.clear();
     lcd.print("Please clock in");
